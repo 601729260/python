@@ -2,7 +2,7 @@
 
 import re
 import urllib
-import HTMLParser
+from html.parser import HTMLParser
 
 def getHtml(url):
     page=urllib.urlopen(url)
@@ -16,4 +16,4 @@ def getHtml(url):
 #     return imglist
 
 html=getHtml("http://www.baidu.com/s?tn=baiduhome_pg&rsv_idx=2&wd=股票")
-print html
+print(html)
