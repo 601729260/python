@@ -3,13 +3,21 @@ import os   #Python的标准库中的os模块包含普遍的操作系统功能
 import re   #引入正则表达式对象  
 import urllib   #用于对URL进行编解码  
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler  #导入HTTP处理相关的模块  
-from testrealmonitor import testrealmonitor
-      
+from subprocess import Popen, PIPE
+#from webtestrealmonitor import webtestrealmonitor
+#from webtestverisbilling import webtestverisbilling
+#from webtestcustmerge import webtestcustmerge
+#from webtestcfmbill import webtestcfmbill
+from webtestmdb import webtestmdb
       
 
         
 class ServerHTTP(BaseHTTPRequestHandler): 
-    test_realmonitor=testrealmonitor() 
+    #test_realmonitor=webtestrealmonitor() 
+    #test_realmonitor=webtestverisbilling() 
+    #test_realmonitor=webtestcustmerge()
+    #test_realmonitor=webtestcfmbill()
+    test_realmonitor=webtestmdb()
     def distribute(self):
         path=self.path  
         print path  
@@ -59,6 +67,14 @@ class ServerHTTP(BaseHTTPRequestHandler):
         self.send_header("test","This is test!")  
         self.end_headers()   
         self.wfile.write(buf)  
+        
+        
+        
+
+        
+        
+        
+        
       
 #启动服务函数  
 def start_server(port):  

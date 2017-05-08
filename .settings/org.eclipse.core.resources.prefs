@@ -1,2 +1,15 @@
 eclipse.preferences.version=1
+encoding//spider/dealword.py=utf-8
 encoding//spider/spider1.py=utf-8
+encoding//spider/ssh.py=utf-8
+encoding//spider/testsqlplus.py=utf-8
+encoding//spider/webserver.py=utf-8
+encoding//spider/webtest.py=utf-8
+encoding//spider/webtest_class.py=utf-8
+encoding//spider/webtestcfmbill.py=utf-8
+encoding//spider/webtestcustmerge.py=utf-8
+encoding//spider/webtestmdb.py=utf-8
+encoding//spider/webtestrealmonitor.py=utf-8
+encoding//spider/webtestverisbilling.py=utf-8
+encoding//url2pdf/url2pdf.py=utf-8
+encoding/<project>=UTF-8

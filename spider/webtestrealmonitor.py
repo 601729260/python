@@ -4,10 +4,11 @@ import re   #引入正则表达式对象
 import urllib   #用于对URL进行编解码  
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler  #导入HTTP处理相关的模块  
 from subprocess import Popen, PIPE
+from webtest_class import webtest_class
 from __builtin__ import exit
       
 
-class testrealmonitor(BaseHTTPRequestHandler):
+class webtestrealmonitor(webtest_class):
     '''
     用于测试帐处realmonitor功能
     '''
@@ -59,7 +60,10 @@ class testrealmonitor(BaseHTTPRequestHandler):
                 <br/>
                 <input type="submit" value="abm_insert_zwq" name=qr/ style="width:200px;height:30px">
                 AbmMdbTest -w SYNCBQ -i  /result/config/abm/abm_mdb_query.cfg
-                src_type <input type="text" value="" name=src_type>
+                src_type <input type="text"  style="width:50px;height:20px" value="" name=src_type>
+                balance <input type="text" style="width:50px;height:20px" value="" name=balance>
+                bill_fee <input type="text" style="width:50px;height:20px" value="" name=bill_fee>
+                bill_discount_fee <input type="text" style="width:50px;height:20px" value="" name=bill_discount_fee>                
                 <br/>                
                 <input type="submit" value="abm_sync_book" name=qr/ style="width:200px;height:30px">
                 AbmMdbTest -w SYNCBOOK -i  /result/config/abm/abm_mdb_query.cfg
@@ -325,7 +329,36 @@ class testrealmonitor(BaseHTTPRequestHandler):
             if abmproc.returncode != 0:
                 str=str+abmerr
             else:
-                str=str+self.transfer_br(self.grep_mdb_str(abmout))                          
+                str=str+self.transfer_br(self.grep_mdb_str(abmout)) 
+        #修改balance    
+        balance=0;
+        if  self.re_get_param(datas,'balance'):           
+            balance=self.re_get_param(datas,'balance')
+            abmproc=Popen(["mdb_client", self.ip,self.abmport], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            (abmout, abmerr) = abmproc.communicate('''delete from CAbmBook where acct_id=217032707;
+            insert into CAbmBook values(217032707, 317032707, 217032703, 100301, %s, 19900101, 20670118, 0, 0, 0);
+            exit'''%balance)
+            if abmproc.returncode != 0:
+                str=str+abmerr
+            else:
+                str=str+self.transfer_br(self.grep_mdb_str(abmout)) 
+        
+        #修改bill_fee    
+        bill_fee=0;
+        bill_discount_fee=0;
+        if  self.re_get_param(datas,'bill_fee'):           
+            bill_fee=self.re_get_param(datas,'bill_fee')
+            if self.re_get_param(datas,'bill_discount_fee'):
+                bill_discount_fee=self.re_get_param(datas,'bill_discount_fee')
+            rasproc=Popen(["mdb_client", self.ip,self.rasport], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            (rasout, raserr) = rasproc.communicate('''delete from CRASBillDetail where bill_id=5006;
+            insert into CRASBillDetail values( 5006, 500961, %s, 0, %s, 0, 0, 0, 0, 0);
+            exit'''%(bill_fee,bill_discount_fee))
+            if rasproc.returncode != 0:
+                str=str+raserr
+            else:
+                str=str+self.transfer_br(self.grep_mdb_str(rasout)) 
+                                           
         html_from=""
         buf = self.return_page%("exec func ok ",str,path,html_from)      
         return buf    
@@ -361,6 +394,8 @@ class testrealmonitor(BaseHTTPRequestHandler):
             insert into CAbmUserService values(217032707, 317032707, 1003, 20001230, 20391230);
             delete from CAbmMonitorPlan where acct_id=217032707;
             insert into CAbmMonitorPlan values(217032707, 317032707, 20, 0, 1, 20021122, 20331122);
+            delete from CAbmCredit where acct_id=217032707;
+            insert into CAbmCredit values(217032707 , 317032707 , 1003, 11169 , 11169 , 0, 0, 20110601, 20300101);
             exit''')
         str=str+"prepare data to abmmdb\n"
         if abmproc.returncode != 0:
@@ -391,7 +426,7 @@ class testrealmonitor(BaseHTTPRequestHandler):
         (rasout, raserr) = rasproc.communicate('''delete from CRASBill where acct_id=217032707;
             insert into CRASBill values( 217032707, 317032707, 5006, 20170401, 20170501, 20170401, 20170501, 6, 0);
             delete from CRASBillDetail where bill_id=5006;
-            insert into CRASBillDetail values( 5006, 505071, 30000, 0, 26000, 0, 0, 0, 0, 0);
+            insert into CRASBillDetail values( 5006, 500961, 30000, 0, 26000, 0, 0, 0, 0, 0);
             delete from CRASRentLog where acct_id=217032707;
             insert into CRASRentLog values( 317032707, 217032707, 60002121, 317032707272238, 5006, 60002121, 0, 2823, 0, 0, 0, 0, 20170108100807, 20190316163001);
             exit''')
